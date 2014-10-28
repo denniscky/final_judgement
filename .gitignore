@@ -1,0 +1,8 @@
+.DS_Store
+.svn
+*.xcuserdatad
+*.idea
+.komodotools
+# Ignore OpenOffice files
+.~lock.*
+.idea/*
