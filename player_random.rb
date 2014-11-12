@@ -5,6 +5,6 @@ class PlayerRandom < Player
 
   def choose_role(game)
     random_role = [Role::ALTRUIST, Role::PRAGMATIST, Role::HOARDER, Role::OPPRESSOR]
-    @chosen_role = random_role[rand(random_role.length)]
+    random_role[rand(random_role.length)]
   end
 end

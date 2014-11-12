@@ -4,6 +4,6 @@ class PlayerOppressor < Player
   end
 
   def choose_role(game)
-    @chosen_role = Role::OPPRESSOR
+    Role::OPPRESSOR
   end
 end

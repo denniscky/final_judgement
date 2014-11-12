@@ -1,11 +1,13 @@
 require_relative 'player'
 
 class Game
-  NUM_TURNS = 7
+  NUM_TURNS = 5
   MAX_ARMA_LEVEL = 3
   MIN_ARMA_LEVEL = -3
 
   attr_reader :current_turn
+  attr_reader :crisis_this_turn
+  attr_reader :arma_level
   attr_reader :end_state
 
   def initialize(options)
@@ -24,40 +26,37 @@ class Game
   end
 
   def execute
-    puts 'Begin Game'
-
     while true
       begin_turn
 
-      choose_role
+      players_choose_roles
       distribute_karma
       adjust_arma_level
+      distribute_wealth
 
       world_ending = check_world_end
       puts "Current armageddo-meter: #{@arma_level}. World is #{world_ending ? '' : 'not '}ending."
+
       break if world_ending
-
-      distribute_wealth
-
       break if @current_turn == NUM_TURNS
+
       @current_turn += 1
     end
 
-    process_winner
+    process_win_loss
 
     # puts self
   end
 
   def begin_turn
-    puts "Begin Turn #{turn_number}"
     @crisis_this_turn = @crises_left.delete_at(rand(@crises_left.length))
     @wealth_this_turn = @temptations_left.delete_at(rand(@temptations_left.length))
-
+    puts "Begin Turn #{turn_number}: Crisis = #{@crisis_this_turn}, Wealth = #{@wealth_this_turn}, Armageddo-meter = #{@arma_level}"
   end
 
-  def choose_role
+  def players_choose_roles
     @players.each { |p|
-      p.choose_role(self)
+      p.choose_and_save_role(self)
     }
   end
 
@@ -100,7 +99,6 @@ class Game
     }
     @arma_level = [@arma_level, MAX_ARMA_LEVEL].min
     @arma_level = [@arma_level, MIN_ARMA_LEVEL].max
-    return @arma_level < 0
   end
 
   def check_world_end
@@ -108,20 +106,28 @@ class Game
     players_with_highest_karma.length == 1 ? true : false
   end
 
-  def process_winner
+  def process_win_loss
     puts "Game ended on Turn #{turn_number}."
     @end_state = "Turn #{turn_number}"
     if turn_number < NUM_TURNS
-      players_with_highest_karma[0].set_win_loss(has_won: true)
+      players_with_highest_karma[0].set_win
+      (players_with_highest_wealth - [players_with_highest_karma[0]]).each(&:set_loss)
     else
       if @arma_level >= 0
-        players_with_highest_karma(players_with_highest_wealth).each{|p|p.set_win_loss(has_won: true)}
+        winners = players_with_highest_karma(players_with_highest_wealth)
+        winners.each(&:set_win)
+        (players_with_lowest_wealth - winners).each(&:set_loss)
         @end_state += '(By wealth)'
       else
-        players_with_highest_karma.each{|p|p.set_win_loss(has_won: true)}
+        players_with_highest_karma.each(&:set_win)
+        (players_with_highest_wealth - players_with_highest_karma).each(&:set_loss)
         @end_state += '(End)'
       end
     end
+  end
+
+  def player_count
+    @players.length
   end
 
   def players_with_highest_karma(players = @players)
@@ -130,6 +136,10 @@ class Game
 
   def players_with_highest_wealth
     @players.select{|p|p.num_wealth == @players.map(&:num_wealth).max}
+  end
+
+  def players_with_lowest_wealth
+    @players.select{|p|p.num_wealth == @players.map(&:num_wealth).min}
   end
 
   def turn_number

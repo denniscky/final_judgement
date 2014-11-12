@@ -4,6 +4,6 @@ class PlayerAltruist < Player
   end
 
   def choose_role(game)
-    @chosen_role = Role::ALTRUIST
+    Role::ALTRUIST
   end
 end
