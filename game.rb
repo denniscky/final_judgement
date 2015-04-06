@@ -4,16 +4,29 @@ class Game
   attr_reader :arma_level
   attr_reader :end_state
 
+  ENDED_BY_WEALTH = 'by wealth'
+  ENDED_BY_DESTRUCTION = 'by destruction'
+
   def initialize(options)
+    sit_players(options)
+    set_decks(options)
+    reset_dials
+  end
+
+  def set_decks(options)
     @crises = options[:crises]
     @temptations = options[:temptations]
-    @players = options[:players]
+  end
 
+  def reset_dials
     @arma_level = 0
     @crises_left = @crises
     @temptations_left = @temptations
     @current_turn = 1
+  end
 
+  def sit_players(options)
+    @players = options[:players]
     @players.each { |p|
       p.start_new_game
     }
@@ -21,8 +34,7 @@ class Game
 
   def execute
     while true
-      begin_turn
-
+      reveal_cards
       players_choose_roles
       distribute_karma
       adjust_arma_level
@@ -38,14 +50,12 @@ class Game
     end
 
     process_win_loss
-
-    # puts self
   end
 
-  def begin_turn
+  def reveal_cards
     @crisis_this_turn = @crises_left.delete_at(rand(@crises_left.length))
     @wealth_this_turn = @temptations_left.delete_at(rand(@temptations_left.length))
-    puts "Begin Turn #{turn_number}: Crisis = #{@crisis_this_turn}, Wealth = #{@wealth_this_turn}, Armageddo-meter = #{@arma_level}"
+    puts "Begin Turn #{turn_number}: #{('Crisis = ' + @crisis_this_turn.to_s).red}, #{('Wealth = ' + @wealth_this_turn.to_s).yellow}, #{('Armageddo-meter = ' + @arma_level.to_s).magenta}"
   end
 
   def players_choose_roles
@@ -60,32 +70,6 @@ class Game
     }
   end
 
-  def distribute_wealth
-    played_money = @players.map(&:chosen_money).uniq
-    while true do
-      played_money.sort_by{|m|-m}.each { |num_money|
-
-        players_who_played_this_amount = @players.select{|p| p.chosen_money == num_money}
-        num_players_to_split = players_who_played_this_amount.length
-
-        # puts "Splitting #{@wealth_this_turn} wealth among #{num_players_to_split} players who played #{num_money} money"
-
-        break if @wealth_this_turn < num_players_to_split
-
-        wealth_each_gets = 0
-        while @wealth_this_turn >= num_players_to_split && wealth_each_gets < num_money do
-          wealth_each_gets += 1
-          @wealth_this_turn -= num_players_to_split
-        end
-
-        players_who_played_this_amount.each do |player|
-          player.receive_wealth(wealth_each_gets)
-        end
-      }
-      break
-    end
-  end
-
   def adjust_arma_level
     @arma_level = @arma_level - @crisis_this_turn
     @players.each { |p|
@@ -95,37 +79,63 @@ class Game
     @arma_level = [@arma_level, GameConfig::MIN_ARMA_LEVEL].max
   end
 
+  def distribute_wealth
+    played_money = @players.map(&:chosen_money).uniq
+    while true do
+      played_money.sort_by{|m|-m}.each { |num_money|
+
+        players_who_played_this_amount = @players.select{|p| p.chosen_money == num_money}
+        num_players_to_split = players_who_played_this_amount.length
+        debug "Splitting #{@wealth_this_turn} wealth among #{num_players_to_split} players who played #{num_money} money"
+
+        break if @wealth_this_turn < num_players_to_split
+
+        wealth_each_gets = [@wealth_this_turn / num_players_to_split, num_money].min
+        players_who_played_this_amount.each do |player|
+          player.receive_wealth(wealth_each_gets)
+        end
+        @wealth_this_turn -= num_players_to_split * wealth_each_gets
+      }
+      break
+    end
+  end
+
   def check_world_end
     return false if @arma_level >= 0
     players_with_highest_karma.length == 1 ? true : false
   end
 
   def process_win_loss
-    puts "Game ended on Turn #{turn_number}."
     @end_state = "Turn #{turn_number}"
     if turn_number < GameConfig::NUM_TURNS
-      players_with_highest_karma[0].set_win
-      (players_with_highest_wealth - [players_with_highest_karma[0]]).each(&:set_loss)
+      players_with_highest_karma.each(&:set_win)
+      players_with_lowest_karma.each(&:set_loss)
+      end_reason = ENDED_BY_DESTRUCTION
     else
       if @arma_level >= 0
-        winners = players_with_highest_karma(players_with_highest_wealth)
-        winners.each(&:set_win)
-        (players_with_lowest_wealth - winners).each(&:set_loss)
-        @end_state += '(By wealth)'
+        players_with_highest_wealth.each(&:set_win)
+        players_with_lowest_wealth.each(&:set_loss)
+        end_reason = ENDED_BY_WEALTH
       else
         players_with_highest_karma.each(&:set_win)
-        (players_with_highest_wealth - players_with_highest_karma).each(&:set_loss)
-        @end_state += '(End)'
+        players_with_lowest_karma.each(&:set_loss)
+        end_reason = ENDED_BY_DESTRUCTION
       end
     end
+    puts "Game ended on Turn #{turn_number}. Reason: #{end_reason == ENDED_BY_DESTRUCTION ? end_reason.red : end_reason.yellow}"
+    @end_state += " #{end_reason}"
   end
 
   def player_count
     @players.length
   end
 
-  def players_with_highest_karma(players = @players)
+  def players_with_highest_karma
     players.select{|p|p.num_karma == players.map(&:num_karma).max}
+  end
+
+  def players_with_lowest_karma
+    players.select{|p|p.num_karma == players.map(&:num_karma).min}
   end
 
   def players_with_highest_wealth

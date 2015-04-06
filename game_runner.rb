@@ -6,9 +6,9 @@ class GameRunner
   end
 
   def execute
-    count = 1
+    game_count = 1
     @times.times do
-      puts "---------------------Beginning Game #{count}---------------------".green
+      puts "---------------------Beginning Game #{game_count}---------------------".green
       game = Game.new({
                           crises: GameConfig::CRISIS_CARDS.dup,
                           temptations: GameConfig::TEMPTATION_CARDS.dup,
@@ -17,14 +17,14 @@ class GameRunner
       game.execute
       @end_states[game.end_state] ||= 0
       @end_states[game.end_state] += 1
-      count += 1
+      game_count += 1
     end
   end
 
   def to_s
-    txt = @players.each(&:to_s).join("\n") + "\nEnd conditions tally:\n"
+    txt = @players.each(&:to_s).join("\n") + "\nEnd conditions tally:\n".green
     @end_states.sort.each { |k, v|
-      txt += "#{k}: #{v}"
+      txt += "#{k}: #{v}\n"
     }
     txt
   end

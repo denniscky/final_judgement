@@ -4,7 +4,7 @@ class FirstHalfOppressor < Persona
   end
 
   def choose_role(game)
-    if game.current_turn <= 4
+    if game.current_turn <= 3
       Role::OPPRESSOR
     else
       Role::ALTRUIST

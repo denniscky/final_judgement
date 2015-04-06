@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-
 require 'colored'
 Dir['./*.rb'].each {|file| require_relative file }
 Dir['persona/*.rb'].each {|file| require_relative file }
