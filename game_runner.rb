@@ -1,21 +1,17 @@
 class GameRunner
-  TIMES = 1000
-  CRISES = [5,6,6,7,7,8,8,9]
-  TEMPTATIONS = [7,8,9,10,11,12,13,6]
-
   def initialize(options)
     @players = options[:players]
+    @times = options[:times] || 1
     @end_states = {}
   end
 
   def execute
     count = 1
-    TIMES.times do
-      puts '-------------------------------------------------------'
-      puts "Begin Game #{count}"
+    @times.times do
+      puts "---------------------Beginning Game #{count}---------------------".green
       game = Game.new({
-                          crises: CRISES.dup,
-                          temptations: TEMPTATIONS.dup,
+                          crises: GameConfig::CRISIS_CARDS.dup,
+                          temptations: GameConfig::TEMPTATION_CARDS.dup,
                           players: @players
                       })
       game.execute

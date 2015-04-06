@@ -1,10 +1,4 @@
-require_relative 'player'
-
 class Game
-  NUM_TURNS = 5
-  MAX_ARMA_LEVEL = 3
-  MIN_ARMA_LEVEL = -3
-
   attr_reader :current_turn
   attr_reader :crisis_this_turn
   attr_reader :arma_level
@@ -38,7 +32,7 @@ class Game
       puts "Current armageddo-meter: #{@arma_level}. World is #{world_ending ? '' : 'not '}ending."
 
       break if world_ending
-      break if @current_turn == NUM_TURNS
+      break if @current_turn == GameConfig::NUM_TURNS
 
       @current_turn += 1
     end
@@ -97,8 +91,8 @@ class Game
     @players.each { |p|
       @arma_level += p.chosen_hearts
     }
-    @arma_level = [@arma_level, MAX_ARMA_LEVEL].min
-    @arma_level = [@arma_level, MIN_ARMA_LEVEL].max
+    @arma_level = [@arma_level, GameConfig::MAX_ARMA_LEVEL].min
+    @arma_level = [@arma_level, GameConfig::MIN_ARMA_LEVEL].max
   end
 
   def check_world_end
@@ -109,7 +103,7 @@ class Game
   def process_win_loss
     puts "Game ended on Turn #{turn_number}."
     @end_state = "Turn #{turn_number}"
-    if turn_number < NUM_TURNS
+    if turn_number < GameConfig::NUM_TURNS
       players_with_highest_karma[0].set_win
       (players_with_highest_wealth - [players_with_highest_karma[0]]).each(&:set_loss)
     else

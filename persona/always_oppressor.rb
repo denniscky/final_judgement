@@ -1,4 +1,4 @@
-class PlayerOppressor < Player
+class AlwaysOppressor < Persona
   def name
     'Oppressor Strategy'
   end

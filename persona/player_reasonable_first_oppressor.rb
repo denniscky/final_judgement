@@ -1,6 +1,4 @@
-require_relative 'role'
-
-class PlayerReasonableFirstOppressor < Player
+class PlayerReasonableFirstOppressor < Persona
   def name
     'First Half Reasonably Bad'
   end

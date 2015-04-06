@@ -1,4 +1,4 @@
-class PlayerRandom < Player
+class AlwaysRandom < Persona
   def name
     'Random Strategy'
   end

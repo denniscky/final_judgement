@@ -1,6 +1,7 @@
 require_relative 'role'
 
-class Player
+# Persona represents how a player will play the game (over multiple games)
+class Persona
   attr_reader :num_karma
   attr_reader :num_wealth
 

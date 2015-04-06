@@ -1,4 +1,4 @@
-class PlayerAltruist < Player
+class AlwaysAltruist < Persona
   def name
     'Altruist Strategy'
   end

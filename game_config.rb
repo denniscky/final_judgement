@@ -1,0 +1,8 @@
+module GameConfig
+  NUM_TURNS = 5
+  MAX_ARMA_LEVEL = 3
+  MIN_ARMA_LEVEL = -3
+  CRISIS_CARDS = [5,6,6,7,7,8,8,9]
+  TEMPTATION_CARDS = [7,8,9,10,11,12,13,6]
+end
+

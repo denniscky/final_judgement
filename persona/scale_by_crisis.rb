@@ -1,4 +1,4 @@
-class PlayerByCrisis < Player
+class ScaleByCrisis < Persona
   def name
     'Adjust by Crisis'
   end

@@ -1,6 +1,4 @@
-require_relative 'role'
-
-class PlayerOppressorByLead < Player
+class PlayerOppressorByLead < Persona
   def name
     'Oppress to Lead'
   end

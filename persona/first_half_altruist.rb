@@ -1,13 +1,13 @@
-class PlayerFirstOppressor < Player
+class FirstHalfAltruist < Persona
   def name
-    'First Half Oppressor'
+    'First Half Altruist'
   end
 
   def choose_role(game)
     if game.current_turn <= 4
-      Role::OPPRESSOR
-    else
       Role::ALTRUIST
+    else
+      Role::OPPRESSOR
     end
   end
 end

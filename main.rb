@@ -1,16 +1,16 @@
 #!/usr/bin/env ruby
 
-Dir['./*.rb'].each {|file|
-  require_relative file
-}
+require 'colored'
+Dir['./*.rb'].each {|file| require_relative file }
+Dir['persona/*.rb'].each {|file| require_relative file }
 
 players = [
-    PlayerRandom.new,
-    PlayerFirstAltruist.new,
-    PlayerAltruist.new,
-    PlayerFirstOppressor.new
+    AlwaysRandom.new,
+    FirstHalfAltruist.new,
+    AlwaysAltruist.new,
+    FirstHalfOppressor.new
 ]
 
-runner = GameRunner.new(players: players)
+runner = GameRunner.new(players: players, times: 1000)
 runner.execute
 puts runner
