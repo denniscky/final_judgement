@@ -1,4 +1,4 @@
-class GameRunner
+class Match
   def initialize(options)
     @players = options[:players]
     @times = options[:times] || 1
@@ -6,9 +6,8 @@ class GameRunner
   end
 
   def execute
-    game_count = 1
-    @times.times do
-      puts "---------------------Beginning Game #{game_count}---------------------".green
+    @times.times do |game_count|
+      log(:game, "---------------------Beginning Game #{game_count+1}---------------------".green)
       game = Game.new({
                           crises: GameConfig::CRISIS_CARDS.dup,
                           temptations: GameConfig::TEMPTATION_CARDS.dup,
@@ -17,8 +16,8 @@ class GameRunner
       game.execute
       @end_states[game.end_state] ||= 0
       @end_states[game.end_state] += 1
-      game_count += 1
     end
+    print_summary
   end
 
   def print_summary

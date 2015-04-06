@@ -6,6 +6,7 @@ class Persona
   attr_reader :num_wealth
 
   def initialize
+    raise 'A persona\'s name can only be at most 24 characters' if name.length > 24
     @num_wins = 0
     @num_losses = 0
   end
@@ -24,22 +25,54 @@ class Persona
 
   def choose_and_save_role(game)
     role = choose_role(game)
-    raise 'Role not chosen' if !role
+    raise "Role not chosen for turn #{game.current_turn}" if !role
     @roles_each_turn.push(role)
   end
 
   def choose_role(game)
-    raise 'Strategy not implemented'
+    role = case game.current_turn
+             when 1 then role_turn_1(game)
+             when 2 then role_turn_2(game)
+             when 3 then role_turn_3(game)
+             when 4 then role_turn_4(game)
+             when 5 then role_turn_5(game)
+           end
+    role = role_default(game) if !role
+    role
+  end
+
+  def role_default(game)
+    nil
+  end
+
+  def role_turn_1(game)
+    nil
+  end
+
+  def role_turn_2(game)
+    nil
+  end
+
+  def role_turn_3(game)
+    nil
+  end
+
+  def role_turn_4(game)
+    nil
+  end
+
+  def role_turn_5(game)
+    nil
   end
 
   def receive_karma(amount)
     @num_karma += amount
-    puts "#{'%24s'%name} receives #{amount} karma  as #{'%9s'%chosen_role_name}. Total karma : #{@num_karma}"
+    debug "#{'%24s'%name} receives #{amount} karma  as #{'%9s'%chosen_role_name}. Total karma : #{@num_karma}"
   end
 
   def receive_wealth(amount)
     @num_wealth += amount
-    puts "#{'%24s'%name} receives #{amount} wealth as #{'%9s'%chosen_role_name}. Total wealth: #{@num_wealth}"
+    debug "#{'%24s'%name} receives #{amount} wealth as #{'%9s'%chosen_role_name}. Total wealth: #{@num_wealth}"
   end
 
   def chosen_money
@@ -76,11 +109,19 @@ class Persona
     @num_wins - @num_losses
   end
 
-  def print_status
-    puts "#{'%20s'%name} - Karma =#{'%2d'%@num_karma}; Wealth =#{'%2d'%@num_wealth}; History=#{chosen_roles_history} #{@won_this_game ? 'Winner'.red : ''}#{@lost_this_game ? 'Loser'.red : ''}"
+  def to_s
+    summary_str
+  end
+
+  def status_str
+    "#{'%20s'%name} - Karma =#{'%2d'%@num_karma}; Wealth =#{'%2d'%@num_wealth}; History=#{chosen_roles_history} #{@won_this_game ? 'Winner'.red : ''}#{@lost_this_game ? 'Loser'.red : ''}"
   end
 
   def print_summary
-    puts "#{'%20s'%name} - Win =#{'%4d'%@num_wins}; Loss =#{'%4d'%@num_losses}; Score =#{'%5d'%score}"
+    puts summary_str
+  end
+
+  def summary_str
+    "#{'%20s'%name} - Win =#{'%4d'%@num_wins}; Loss =#{'%4d'%@num_losses}; Score =#{'%5d'%score}"
   end
 end

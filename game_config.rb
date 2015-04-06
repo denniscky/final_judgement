@@ -1,6 +1,11 @@
 module GameConfig
 
+  LOG_LEVEL = :match
   DEBUG_MODE = false
+
+  NUM_PLAYERS = 4
+  NUM_ROUNDS = 2
+  NUM_GAMES_IN_A_ROUND = 50
 
   NUM_TURNS = 5
   MAX_ARMA_LEVEL = 3
@@ -13,4 +18,8 @@ end
 
 def debug(s)
   puts s.to_s.white_on_red if GameConfig::DEBUG_MODE
+end
+
+def log(level, s)
+  puts s if (level == GameConfig::LOG_LEVEL || level == :all)
 end

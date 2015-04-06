@@ -1,4 +1,4 @@
-class PlayerOppressorByLead < Persona
+class OppressorUnlessLeading < Persona
   def name
     'Oppress to Lead'
   end

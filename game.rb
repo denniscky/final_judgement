@@ -1,6 +1,7 @@
 class Game
   attr_reader :current_turn
   attr_reader :crisis_this_turn
+  attr_reader :wealth_this_turn
   attr_reader :arma_level
   attr_reader :end_state
 
@@ -8,7 +9,7 @@ class Game
   ENDED_BY_DESTRUCTION = 'by destruction'
 
   def initialize(options)
-    sit_players(options)
+    seat_players(options)
     set_decks(options)
     reset_dials
   end
@@ -16,16 +17,16 @@ class Game
   def set_decks(options)
     @crises = options[:crises]
     @temptations = options[:temptations]
+    @crises_left = @crises
+    @temptations_left = @temptations
   end
 
   def reset_dials
     @arma_level = 0
-    @crises_left = @crises
-    @temptations_left = @temptations
     @current_turn = 1
   end
 
-  def sit_players(options)
+  def seat_players(options)
     @players = options[:players]
     @players.each { |p|
       p.start_new_game
@@ -39,9 +40,10 @@ class Game
       distribute_karma
       adjust_arma_level
       distribute_wealth
+      print_statuses
 
       world_ending = check_world_end
-      puts "Current armageddo-meter: #{@arma_level}. World is #{world_ending ? '' : 'not '}ending.".cyan
+      log(:game, "Current armageddo-meter: #{@arma_level}. World is #{world_ending ? '' : 'not '}ending.".cyan)
 
       break if world_ending
       break if @current_turn == GameConfig::NUM_TURNS
@@ -55,7 +57,7 @@ class Game
   def reveal_cards
     @crisis_this_turn = @crises_left.delete_at(rand(@crises_left.length))
     @wealth_this_turn = @temptations_left.delete_at(rand(@temptations_left.length))
-    puts "Begin Turn #{turn_number}: #{('Crisis = ' + @crisis_this_turn.to_s).red}, #{('Wealth = ' + @wealth_this_turn.to_s).yellow}, #{('Armageddo-meter = ' + @arma_level.to_s).magenta}".cyan
+    log(:game, "Begin Turn #{turn_number}: #{('Crisis = ' + @crisis_this_turn.to_s).red}, #{('Wealth = ' + @wealth_this_turn.to_s).yellow}, #{('Armageddo-meter = ' + @arma_level.to_s).magenta}".cyan)
   end
 
   def players_choose_roles
@@ -80,15 +82,21 @@ class Game
   end
 
   def distribute_wealth
+
+    # @wealth_this_turn = 10
+
     played_money = @players.map(&:chosen_money).uniq
     while true do
+      stop_distribution = false
       played_money.sort_by{|m|-m}.each { |num_money|
-
         players_who_played_this_amount = @players.select{|p| p.chosen_money == num_money}
         num_players_to_split = players_who_played_this_amount.length
         debug "Splitting #{@wealth_this_turn} wealth among #{num_players_to_split} players who played #{num_money} money"
 
-        break if @wealth_this_turn < num_players_to_split
+        if @wealth_this_turn < num_players_to_split
+          stop_distribution = true
+          break
+        end
 
         wealth_each_gets = [@wealth_this_turn / num_players_to_split, num_money].min
         players_who_played_this_amount.each do |player|
@@ -96,7 +104,13 @@ class Game
         end
         @wealth_this_turn -= num_players_to_split * wealth_each_gets
       }
-      break
+      break if stop_distribution
+    end
+  end
+
+  def print_statuses
+    @players.each do |p|
+      log(:game, p.status_str)
     end
   end
 
@@ -122,8 +136,7 @@ class Game
         end_reason = ENDED_BY_DESTRUCTION
       end
     end
-    puts "Game ended on Turn #{turn_number}. Reason: #{end_reason == ENDED_BY_DESTRUCTION ? end_reason.red : end_reason.yellow}".cyan
-    @players.each(&:print_status)
+    log(:game, "Game ended on Turn #{turn_number}. Reason: #{end_reason == ENDED_BY_DESTRUCTION ? end_reason.red : end_reason.yellow}".cyan)
     @end_state += " #{end_reason}"
   end
 
@@ -149,6 +162,10 @@ class Game
 
   def turn_number
     @current_turn
+  end
+
+  def effective_crisis_level
+    @crisis_this_turn - @arma_level
   end
 
   def to_s
