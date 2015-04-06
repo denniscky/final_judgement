@@ -13,57 +13,59 @@ class Persona
     @num_games_played = 0
   end
 
-  def start_new_game
+  def start_new_game(game)
     @num_karma = 0
     @num_wealth = 0
     @roles_each_turn = []
     @won_this_game = false
     @lost_this_game = false
+    @game = game
+    @brain = CerebralCortex.new(me: self, game: game)
   end
 
   def name
     raise 'Name not implemented'
   end
 
-  def choose_and_save_role(game)
-    role = choose_role(game)
-    raise "Role not chosen for turn #{game.current_turn}" if !role
+  def choose_and_save_role
+    role = choose_role
+    raise "Role not chosen for turn #{@game.current_turn}" if !role
     @roles_each_turn.push(role)
   end
 
-  def choose_role(game)
-    role = case game.current_turn
-             when 1 then role_turn_1(game)
-             when 2 then role_turn_2(game)
-             when 3 then role_turn_3(game)
-             when 4 then role_turn_4(game)
-             when 5 then role_turn_5(game)
+  def choose_role
+    role = case @game.current_turn
+             when 1 then role_turn_1
+             when 2 then role_turn_2
+             when 3 then role_turn_3
+             when 4 then role_turn_4
+             when 5 then role_turn_5
            end
-    role = role_default(game) if !role
+    role = role_default if !role
     role
   end
 
-  def role_default(game)
+  def role_default
     nil
   end
 
-  def role_turn_1(game)
+  def role_turn_1
     nil
   end
 
-  def role_turn_2(game)
+  def role_turn_2
     nil
   end
 
-  def role_turn_3(game)
+  def role_turn_3
     nil
   end
 
-  def role_turn_4(game)
+  def role_turn_4
     nil
   end
 
-  def role_turn_5(game)
+  def role_turn_5
     nil
   end
 
@@ -91,6 +93,14 @@ class Persona
 
   def chosen_role
     @roles_each_turn[-1]
+  end
+
+  def public_information
+    {
+      object_id: self.object_id,
+      karma: @num_karma,
+      wealth: @num_wealth
+    }
   end
 
   def chosen_roles_history

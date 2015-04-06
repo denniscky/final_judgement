@@ -3,7 +3,7 @@ class AlwaysAltruist < Persona
     'Altruist Strategy'
   end
 
-  def choose_role(game)
+  def choose_role
     Role::ALTRUIST
   end
 end

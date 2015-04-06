@@ -1,6 +1,4 @@
 module GameConfig
-
-  LOG_LEVEL = :match
   DEBUG_MODE = false
 
   NUM_PLAYERS = 4
@@ -11,7 +9,8 @@ module GameConfig
   MAX_ARMA_LEVEL = 3
   MIN_ARMA_LEVEL = -3
 
-  CRISIS_CARDS = [5,6,6,7,7,8,8,9]
+  # CRISIS_CARDS = [4,5,6,6,7,7,8,9]
+  CRISIS_CARDS = [5,6,6,7,7,8,8,9] #better
   TEMPTATION_CARDS = [6,7,8,9,10,11,12,13]
 
 end

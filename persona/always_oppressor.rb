@@ -3,7 +3,7 @@ class AlwaysOppressor < Persona
     'Oppressor Strategy'
   end
 
-  def choose_role(game)
+  def choose_role
     Role::OPPRESSOR
   end
 end

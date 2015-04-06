@@ -27,9 +27,10 @@ class Game
   end
 
   def seat_players(options)
+    raise 'wrong number of players' if options[:players].length != GameConfig::NUM_PLAYERS
     @players = options[:players]
     @players.each { |p|
-      p.start_new_game
+      p.start_new_game(self)
     }
   end
 
@@ -57,12 +58,12 @@ class Game
   def reveal_cards
     @crisis_this_turn = @crises_left.delete_at(rand(@crises_left.length))
     @wealth_this_turn = @temptations_left.delete_at(rand(@temptations_left.length))
-    log(:game, "Begin Turn #{turn_number}: #{('Crisis = ' + @crisis_this_turn.to_s).red}, #{('Wealth = ' + @wealth_this_turn.to_s).yellow}, #{('Armageddo-meter = ' + @arma_level.to_s).magenta}".cyan)
+    log(:game, "Begin Turn #{@current_turn}: #{('Crisis = ' + @crisis_this_turn.to_s).red}, #{('Wealth = ' + @wealth_this_turn.to_s).yellow}, #{('Armageddo-meter = ' + @arma_level.to_s).magenta}".cyan)
   end
 
   def players_choose_roles
     @players.each { |p|
-      p.choose_and_save_role(self)
+      p.choose_and_save_role
     }
   end
 
@@ -120,9 +121,9 @@ class Game
   end
 
   def process_win_loss
-    @end_state = "Turn #{turn_number}"
+    @end_state = "Turn #{@current_turn}"
     @players.each(&:increment_game_count)
-    if turn_number < GameConfig::NUM_TURNS || @arma_level < 0
+    if @current_turn < GameConfig::NUM_TURNS || @arma_level < 0
       unless players_with_highest_karma.length == GameConfig::NUM_PLAYERS
         players_with_highest_karma.each(&:set_win)
         players_with_lowest_karma.each(&:set_loss)
@@ -135,12 +136,16 @@ class Game
       end
       end_reason = ENDED_BY_WEALTH
     end
-    log(:game, "Game ended on Turn #{turn_number}. Reason: #{end_reason == ENDED_BY_DESTRUCTION ? end_reason.red : end_reason.yellow}".cyan)
+    log(:game, "Game ended on Turn #{@current_turn}. Reason: #{end_reason == ENDED_BY_DESTRUCTION ? end_reason.red : end_reason.yellow}".cyan)
     @end_state += " #{end_reason}"
   end
 
   def player_count
     @players.length
+  end
+
+  def players_public_information
+    @players.map(&:public_information)
   end
 
   def players_with_highest_karma
@@ -159,21 +164,9 @@ class Game
     @players.select{|p|p.num_wealth == @players.map(&:num_wealth).min}
   end
 
-  def turn_number
-    @current_turn
-  end
-
-  def effective_crisis_level
-    @crisis_this_turn - @arma_level
-  end
-
-  def average_hearts_needed
-    effective_crisis_level.to_f / player_count
-  end
-
   def to_s
     str = ''
-    str += "[DEBUG] Current turn           : #{turn_number}\n"
+    str += "[DEBUG] Current turn           : #{@current_turn}\n"
     str += "[DEBUG] Current crisis         : #{@crisis_this_turn}\n"
     str += "[DEBUG] Current temptation     : #{@wealth_this_turn}\n"
     str += "[DEBUG] Current armageddo-meter: #{@arma_level}\n"

@@ -3,8 +3,8 @@ class ScaleByCrisis < Persona
     'Adjust by Crisis'
   end
 
-  def choose_role(game)
-    heart_share = ((game.crisis_this_turn).to_f / game.player_count).ceil
+  def choose_role
+    heart_share = @brain.average_hearts_needed.ceil - 1
     Role::get_by_heart_num heart_share
   end
 end

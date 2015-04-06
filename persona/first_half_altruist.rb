@@ -3,8 +3,8 @@ class FirstHalfAltruist < Persona
     'First Half Altruist'
   end
 
-  def choose_role(game)
-    if game.current_turn <= 3
+  def choose_role
+    if @game.current_turn <= 3
       Role::ALTRUIST
     else
       Role::OPPRESSOR
