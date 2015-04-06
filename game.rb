@@ -99,7 +99,6 @@ class Game
     }
     @arma_level = [@arma_level, MAX_ARMA_LEVEL].min
     @arma_level = [@arma_level, MIN_ARMA_LEVEL].max
-
   end
 
   def check_world_end
