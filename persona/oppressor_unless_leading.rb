@@ -1,6 +1,6 @@
 class OppressorUnlessLeading < Persona
   def name
-    'Oppress to Lead'
+    'Oppress unless leading'
   end
 
   def choose_role(game)

@@ -5,7 +5,7 @@ module GameConfig
 
   NUM_PLAYERS = 4
   NUM_ROUNDS = 2
-  NUM_GAMES_IN_A_ROUND = 50
+  NUM_GAMES_IN_A_ROUND = 10
 
   NUM_TURNS = 5
   MAX_ARMA_LEVEL = 3

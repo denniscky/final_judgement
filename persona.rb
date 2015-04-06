@@ -2,13 +2,15 @@ require_relative 'role'
 
 # Persona represents how a player will play the game (over multiple games)
 class Persona
+  MAX_NAME_LENGTH = 30
   attr_reader :num_karma
   attr_reader :num_wealth
 
   def initialize
-    raise 'A persona\'s name can only be at most 24 characters' if name.length > 24
+    raise "A persona's name can only be at most #{MAX_NAME_LENGTH} characters" if name.length > MAX_NAME_LENGTH
     @num_wins = 0
     @num_losses = 0
+    @num_games_played = 0
   end
 
   def start_new_game
@@ -67,12 +69,12 @@ class Persona
 
   def receive_karma(amount)
     @num_karma += amount
-    debug "#{'%24s'%name} receives #{amount} karma  as #{'%9s'%chosen_role_name}. Total karma : #{@num_karma}"
+    debug "#{'%30s'%name} receives #{amount} karma  as #{'%9s'%chosen_role_name}. Total karma : #{@num_karma}"
   end
 
   def receive_wealth(amount)
     @num_wealth += amount
-    debug "#{'%24s'%name} receives #{amount} wealth as #{'%9s'%chosen_role_name}. Total wealth: #{@num_wealth}"
+    debug "#{'%30s'%name} receives #{amount} wealth as #{'%9s'%chosen_role_name}. Total wealth: #{@num_wealth}"
   end
 
   def chosen_money
@@ -95,6 +97,10 @@ class Persona
     @roles_each_turn.map{|r|r[:code]}.join(',')
   end
 
+  def increment_game_count
+    @num_games_played += 1
+  end
+
   def set_win
     @num_wins += 1
     @won_this_game = true
@@ -114,7 +120,7 @@ class Persona
   end
 
   def status_str
-    "#{'%20s'%name} - Karma =#{'%2d'%@num_karma}; Wealth =#{'%2d'%@num_wealth}; History=#{chosen_roles_history} #{@won_this_game ? 'Winner'.red : ''}#{@lost_this_game ? 'Loser'.red : ''}"
+    "#{'%30s'%name} - Karma =#{'%2d'%@num_karma}; Wealth =#{'%2d'%@num_wealth}; History=#{chosen_roles_history} #{@won_this_game ? 'Winner'.red : ''}#{@lost_this_game ? 'Loser'.red : ''}"
   end
 
   def print_summary
@@ -122,6 +128,6 @@ class Persona
   end
 
   def summary_str
-    "#{'%20s'%name} - Win =#{'%4d'%@num_wins}; Loss =#{'%4d'%@num_losses}; Score =#{'%5d'%score}"
+    "#{'%30s'%name} - Win =#{'%4d'%@num_wins}  Loss =#{'%4d'%@num_losses}  Played =#{'%4d'%@num_games_played}  Score =#{'%5d'%score}"
   end
 end

@@ -121,20 +121,19 @@ class Game
 
   def process_win_loss
     @end_state = "Turn #{turn_number}"
-    if turn_number < GameConfig::NUM_TURNS
-      players_with_highest_karma.each(&:set_win)
-      players_with_lowest_karma.each(&:set_loss)
-      end_reason = ENDED_BY_DESTRUCTION
-    else
-      if @arma_level >= 0
-        players_with_highest_wealth.each(&:set_win)
-        players_with_lowest_wealth.each(&:set_loss)
-        end_reason = ENDED_BY_WEALTH
-      else
+    @players.each(&:increment_game_count)
+    if turn_number < GameConfig::NUM_TURNS || @arma_level < 0
+      unless players_with_highest_karma.length == GameConfig::NUM_PLAYERS
         players_with_highest_karma.each(&:set_win)
         players_with_lowest_karma.each(&:set_loss)
-        end_reason = ENDED_BY_DESTRUCTION
       end
+      end_reason = ENDED_BY_DESTRUCTION
+    else
+      unless players_with_highest_wealth.length == GameConfig::NUM_PLAYERS
+        players_with_highest_wealth.each(&:set_win)
+        players_with_lowest_wealth.each(&:set_loss)
+      end
+      end_reason = ENDED_BY_WEALTH
     end
     log(:game, "Game ended on Turn #{turn_number}. Reason: #{end_reason == ENDED_BY_DESTRUCTION ? end_reason.red : end_reason.yellow}".cyan)
     @end_state += " #{end_reason}"
@@ -166,6 +165,10 @@ class Game
 
   def effective_crisis_level
     @crisis_this_turn - @arma_level
+  end
+
+  def average_hearts_needed
+    effective_crisis_level.to_f / player_count
   end
 
   def to_s
