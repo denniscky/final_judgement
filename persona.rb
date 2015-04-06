@@ -5,12 +5,25 @@ class Persona
   MAX_NAME_LENGTH = 30
   attr_reader :num_karma
   attr_reader :num_wealth
+  attr_reader :score_history
 
   def initialize
     raise "A persona's name can only be at most #{MAX_NAME_LENGTH} characters" if name.length > MAX_NAME_LENGTH
     @num_wins = 0
+    @num_wins_this_match = 0
     @num_losses = 0
+    @num_losses_this_match = 0
     @num_games_played = 0
+    @score_history = []
+  end
+
+  def start_match
+    @num_wins_this_match = 0
+    @num_losses_this_match = 0
+  end
+
+  def end_match
+    @score_history.push score
   end
 
   def start_new_game(game)
@@ -113,11 +126,13 @@ class Persona
 
   def set_win
     @num_wins += 1
+    @num_wins_this_match += 1
     @won_this_game = true
   end
 
   def set_loss
     @num_losses += 1
+    @num_losses_this_match += 1
     @lost_this_game = true
   end
 
@@ -138,6 +153,6 @@ class Persona
   end
 
   def summary_str
-    "#{'%30s'%name} - Win =#{'%4d'%@num_wins}  Loss =#{'%4d'%@num_losses}  Played =#{'%4d'%@num_games_played}  Score =#{'%5d'%score}"
+    "#{'%30s'%name} - Match Wins =#{'%4d'%@num_wins_this_match}  Match Losses =#{'%4d'%@num_losses_this_match}  Total Wins =#{'%4d'%@num_wins}  Total Losses =#{'%4d'%@num_losses}  Played =#{'%4d'%@num_games_played}  Score =#{'%5d'%score}"
   end
 end

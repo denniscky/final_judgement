@@ -6,7 +6,7 @@ class Ladder
   end
 
   def execute
-    GameConfig::NUM_PLAYERS.times do
+    (GameConfig::NUM_PLAYERS - 1).times do
       @personas.each do |klass|
         @ladder.push klass.new
       end
@@ -32,6 +32,17 @@ class Ladder
         log(:match, p)
       end
     end
+
+    # @ladder.each do |p|
+    #   print "#{p.name}, "
+    # end
+    # print "\n"
+    # @num_rounds.times do |round_count|
+    #   @ladder.each do |p|
+    #     print "#{p.score_history[round_count]}, "
+    #   end
+    #   print "\n"
+    # end
   end
 end
 
