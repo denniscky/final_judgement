@@ -22,4 +22,6 @@ Ladder.new(
               GreedyAtFirst,
               ScaleByCrisis
             ],
-  num_rounds: 100).execute
+  num_rounds: 100,
+  num_games_in_a_round: 3
+).execute

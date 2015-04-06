@@ -16,12 +16,13 @@ Match.new(
              # AlwaysRandom.new,
              FirstHalfAltruist.new,
              Dennis.new,
-             FirstHalfAltruist.new,
-             FirstHalfAltruist.new
+             ScaleByCrisis.new,
+             # FirstHalfAltruist.new,
+             # FirstHalfAltruist.new
              # AlwaysAltruist.new,
              # AlwaysAltruist.new,
              # AlwaysAltruist.new,
-             #FirstHalfOppressor.new
+             FirstHalfOppressor.new
            ],
   times: 100
 ).execute

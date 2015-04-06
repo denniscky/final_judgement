@@ -23,10 +23,10 @@ class Match
   end
 
   def print_summary
-    puts "---------------------Game Results---------------------".green
-    puts 'Players summary:'.green
+    puts '---------------------Game Results---------------------'.green
+    puts 'Players summary:'.cyan
     @players.each(&:print_summary)
-    puts 'End conditions tally:'.green
+    puts 'End conditions tally:'.cyan
     @end_states.sort.each { |k, v|
       print "#{k}: #{v}\n"
     }
