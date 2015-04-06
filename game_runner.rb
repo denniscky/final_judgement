@@ -21,11 +21,13 @@ class GameRunner
     end
   end
 
-  def to_s
-    txt = @players.each(&:to_s).join("\n") + "\nEnd conditions tally:\n".green
+  def print_summary
+    puts "---------------------Game Results---------------------".green
+    puts 'Players summary:'.green
+    @players.each(&:print_summary)
+    puts 'End conditions tally:'.green
     @end_states.sort.each { |k, v|
-      txt += "#{k}: #{v}\n"
+      puts "#{k}: #{v}\n"
     }
-    txt
   end
 end

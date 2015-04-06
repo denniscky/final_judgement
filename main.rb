@@ -12,4 +12,4 @@ players = [
 
 runner = GameRunner.new(players: players, times: 1000)
 runner.execute
-puts runner
+runner.print_summary

@@ -41,7 +41,7 @@ class Game
       distribute_wealth
 
       world_ending = check_world_end
-      puts "Current armageddo-meter: #{@arma_level}. World is #{world_ending ? '' : 'not '}ending."
+      puts "Current armageddo-meter: #{@arma_level}. World is #{world_ending ? '' : 'not '}ending.".cyan
 
       break if world_ending
       break if @current_turn == GameConfig::NUM_TURNS
@@ -55,7 +55,7 @@ class Game
   def reveal_cards
     @crisis_this_turn = @crises_left.delete_at(rand(@crises_left.length))
     @wealth_this_turn = @temptations_left.delete_at(rand(@temptations_left.length))
-    puts "Begin Turn #{turn_number}: #{('Crisis = ' + @crisis_this_turn.to_s).red}, #{('Wealth = ' + @wealth_this_turn.to_s).yellow}, #{('Armageddo-meter = ' + @arma_level.to_s).magenta}"
+    puts "Begin Turn #{turn_number}: #{('Crisis = ' + @crisis_this_turn.to_s).red}, #{('Wealth = ' + @wealth_this_turn.to_s).yellow}, #{('Armageddo-meter = ' + @arma_level.to_s).magenta}".cyan
   end
 
   def players_choose_roles
@@ -122,7 +122,8 @@ class Game
         end_reason = ENDED_BY_DESTRUCTION
       end
     end
-    puts "Game ended on Turn #{turn_number}. Reason: #{end_reason == ENDED_BY_DESTRUCTION ? end_reason.red : end_reason.yellow}"
+    puts "Game ended on Turn #{turn_number}. Reason: #{end_reason == ENDED_BY_DESTRUCTION ? end_reason.red : end_reason.yellow}".cyan
+    @players.each(&:print_status)
     @end_state += " #{end_reason}"
   end
 
@@ -131,11 +132,11 @@ class Game
   end
 
   def players_with_highest_karma
-    players.select{|p|p.num_karma == players.map(&:num_karma).max}
+    @players.select{|p|p.num_karma == @players.map(&:num_karma).max}
   end
 
   def players_with_lowest_karma
-    players.select{|p|p.num_karma == players.map(&:num_karma).min}
+    @players.select{|p|p.num_karma == @players.map(&:num_karma).min}
   end
 
   def players_with_highest_wealth

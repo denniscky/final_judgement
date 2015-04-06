@@ -14,6 +14,8 @@ class Persona
     @num_karma = 0
     @num_wealth = 0
     @roles_each_turn = []
+    @won_this_game = false
+    @lost_this_game = false
   end
 
   def name
@@ -32,12 +34,12 @@ class Persona
 
   def receive_karma(amount)
     @num_karma += amount
-    puts "[#{'%20s'%name}] receives #{amount} karma as #{chosen_role_name}. Total karma: #{@num_karma}"
+    puts "#{'%24s'%name} receives #{amount} karma  as #{'%9s'%chosen_role_name}. Total karma : #{@num_karma}"
   end
 
   def receive_wealth(amount)
     @num_wealth += amount
-    puts "[#{'%20s'%name}] receives #{amount} wealth as #{chosen_role_name}. Total wealth: #{@num_wealth}"
+    puts "#{'%24s'%name} receives #{amount} wealth as #{'%9s'%chosen_role_name}. Total wealth: #{@num_wealth}"
   end
 
   def chosen_money
@@ -57,25 +59,28 @@ class Persona
   end
 
   def chosen_roles_history
-    @roles_each_turn.map{|r|r[:num_hearts]}.join(',')
+    @roles_each_turn.map{|r|r[:code]}.join(',')
   end
 
   def set_win
     @num_wins += 1
+    @won_this_game = true
   end
 
   def set_loss
     @num_losses += 1
+    @lost_this_game = true
   end
 
   def score
     @num_wins - @num_losses
   end
 
-  def to_s
-    "[#{'%20s'%name}] " +
-        "Karma=#{'%2d'%@num_karma}; Wealth=#{'%2d'%@num_wealth}; " +
-        "Plays=#{chosen_roles_history}; " +
-        "Win=#{'%4d'%@num_wins}; Loss=#{'%4d'%@num_losses}; Score=#{'%4d'%score}"
+  def print_status
+    puts "#{'%20s'%name} - Karma =#{'%2d'%@num_karma}; Wealth =#{'%2d'%@num_wealth}; History=#{chosen_roles_history} #{@won_this_game ? 'Winner'.red : ''}#{@lost_this_game ? 'Loser'.red : ''}"
+  end
+
+  def print_summary
+    puts "#{'%20s'%name} - Win =#{'%4d'%@num_wins}; Loss =#{'%4d'%@num_losses}; Score =#{'%5d'%score}"
   end
 end

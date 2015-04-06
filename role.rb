@@ -1,21 +1,25 @@
 module Role
   ALTRUIST = {
-      name: 'Altruist  ',
+      name: 'Altruist',
+      code: 'A',
       num_hearts: 3,
       num_money: 1
   }
   PRAGMATIST = {
-      name: 'Pragmatist',
+      name: 'Cynic',
+      code: 'C',
       num_hearts: 2,
       num_money: 2
   }
   HOARDER = {
-      name: 'Hoarder   ',
+      name: 'Hoarder',
+      code: 'H',
       num_hearts: 1,
       num_money: 3
   }
   OPPRESSOR = {
-      name: 'Oppressor ',
+      name: 'Oppressor',
+      code: 'O',
       num_hearts: 0,
       num_money: 4
   }
